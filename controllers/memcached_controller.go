@@ -51,13 +51,15 @@ func (r *MemcachedReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 	_ = r.Log.WithValues("memcached", req.NamespacedName)
 
 	// your logic here
-
-	return ctrl.Result{}, nil
+    memcached := &cachev1alpha1.Memcached{}
+    err := r.Get(ctx, req.NamespacedName, memcached)
+	return ctrl.Result{}, err
 }
 
 // SetupWithManager sets up the controller with the Manager.
 func (r *MemcachedReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&cachev1alpha1.Memcached{}).
+		WithOptions(ctrl.Options{MaxConcurrentReconciles: 2}).
 		Complete(r)
 }
